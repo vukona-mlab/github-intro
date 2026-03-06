@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    /* we had to include the body styles to remove the default spacing our page gets. */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* app container contains all the other sections, divs, header, footer. */
+    /* We need this in order to fully control the navbar being at the top, while the footer is at the bottom */
+    #app-container {
+      /* 100vh means the whole height of the screen, but because of padding, we have to subtract 190px */
+      min-height: calc(100vh - 190px);
+      /* calculates overall screen height then subtracts given amounts */
+      /* this padding bottom 190px is for the footer, this is where we will position it */
+      padding-bottom: 190px;
+      width: 100vw;
+    }
+
+    /* with the scrollable, we are moving the content from the top, since our header is fixed */
+    /* without using padding top then our content will start from under the header */
+    #scrollable {
+      /* 60px is for the header height, then 10px is for additional space so it doesnt touch the header */
+      padding-top: 70px;
+      position: relative;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      height: 60px;
+      width: calc(100vw - 20px);
+      background-color: rgb(39, 76, 119);
+      /* we used display flex, to make the items easily flow to the right, as a row, instead of top to bottom */
+      display: flex;
+      flex-direction: row;
+      /* align-items center in this view, puts our items in the center in terms of vertical alignment */
+      align-items: center;
+      padding: 0 10px;
+      gap: 10px;
+      /* z-index brings up content to the top. */
+      z-index: 1;
+    }
+
+    /* min-width means as soon as we hit 720px and above, these styles will apply */
+    @media screen and (min-width: 720px) {
+
+      /* hiding the side menu on small screens */
+      #ham-menu {
+        display: none;
+      }
+
+      /* adjusting the spacing when we get to big screens */
+      header {
+        justify-content: space-between;
+
+      }
+    }
+
+    /* .content is a standard container I use for my projects so styling remains the same */
+    /*  I do this to limit my content to a certain size. You dont always have to but it makes making responsive pages easier */
+    .content {
+      /* max-width means that will be the biggest size it will take, but it can shrink to lower widths */
+      max-width: 1200px;
+      /* since we are setting a limit to the width, we need margin auto to keep the container in the middle  */
+      margin: auto;
+      display: flex;
+      padding: 0 10px;
+      align-items: center;
+      justify-content: space-between;
+
+    }
+
+    #home-text {
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+
+    .links {
+      display: flex;
+      align-items: center;
+      height: 60px;
+    }
+
+    .link {
+      text-decoration: none;
+      color: white;
+      padding: 20px 10px;
+      height: 20px;
+    }
+
+    .link:hover {
+      color: rgb(220, 220, 220);
+      background-color: rgb(15, 37, 61);
+
+    }
+
+    .shopping-cart-icon {
+      height: 20px;
+      width: 20px;
+      /* I added padding to the icon to have a bigger clickable area for the icon */
+      padding: 10px 20px;
+      /* I introduced a pointer cursor so that users can see they can click on the icon */
+      cursor: pointer;
+    }
+
+    .profile-icon {
+      height: 40px;
+      width: 40px;
+      border-radius: 20px;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ic-cont {
+      /* background-color: red; */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* main css */
+    #item-container {
+      display: grid;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      gap: 20px;
+      display: none;
+      /* grid template columns allows for dynamic resizing and responsiveness on the page */
+      /* there's so many settings but this alone gets you started */
+      /* minmax sets the minimum width, and maximum allowed widths, */
+      /* minimum is 250px, but the maximum is 1fr, which it will essentially divide with the other items on that screen, and sometimes it can take the whole width */
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    @media screen and (max-width: 720px) {
+      #item-container {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 20px;
+      }
+    }
+
+    #vw {
+      height: 100px;
+      width: calc(100vw - 20px);
+      background-color: #000000;
+      margin: 0 auto;
+    }
+
+    .item-card {
+      border-radius: 8px;
+      border: 1px solid black;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 200px;
+    }
+
+    .item-image {
+      width: 100%;
+      height: 140px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .button {
+      max-width: 100%;
+      min-width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      background-color: rgb(39, 76, 119);
+    }
+
+    /* footer css */
+    /* since footer needs to always be at the bottom it needs a lot of work around */
+    footer {
+      /* we first give it position absolute because it allows us to move this whereever we want on the screen, or in a specific container */
+
+      position: absolute;
+      /* after that we set it at the bottom, by setting bottom: -190px */
+      /* this position is the one we opened up in app container padding  */
+      bottom: -190px;
+      /* we want it to have the screens full width, but minus 20px because of the padding */
+      width: calc(100vw - 20px);
+      /* we always need a bit of padding on the right and left */
+      padding: 0 10px;
+      background-color: rgb(39, 76, 119);
+      height: 190px;
+    }
+
+    #footer-container {
+      margin: auto;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .footer-column {
+      width: 280px
+    }
+
+    #ham-menu {
+      height: 20px;
+      width: 20px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    #side-menu {
+      /* side menu is also fixed on the left so we use absolute positioning as well */
+      position: absolute;
+      left: 0;
+      /* we move it from the top by 60px so it doesnt appear on top of the header but right under */
+      top: 60px;
+      border: 1px solid red;
+      background-color: rgb(39, 76, 119);
+      width: 200px;
+      /* the height should be full height of the screen, but 60px is for the header, and 20px is the padding bottom we gave it */
+      height: calc(100vh - 60px - 20px);
+      /* height: calc(100vh - 60px - 2px - 20px); */
+      /* give it index 1 to be move it on top of other content */
+      z-index: 1;
+      display: flex;
+      /* we gave it a flex direction of column so the content is top to down */
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+    }
+
+    .links-side {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media screen and (min-width: 720px) {
+      /* here i was messing around with the things you can do when you use media queries */
+      footer {
+        background-color: yellowgreen;
+      }
+
+      .button {
+        display: none;
+      }
+
+      #side-menu {
+        display: none;
+      }
+    }
+
+    @media screen and (max-width: 900px) {
+      .footer-column {
+        background-color: red;
+      }
+
+      .profile-icon {
+        background-color: green;
+        border-radius: 10px;
+        border: 3px dotted white
+      }
+    }
+
+    @media screen and (max-width: 720px) {
+      .footer-column {
+        width: 50px;
+        overflow: hidden;
+      }
+
+      .links {
+        display: none;
+      }
+
+      .link {
+        width: 180px;
+        /* padding: 20px 10px; */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app-container">
+    <div id="scrollable">
+      <!-- contains the logo, and navigation, remains at the top -->
+      <header>
+        <img src="/assets/hamburger.png" id="ham-menu" />
+        <h2 id="home-text">SUII</h2>
+        <!-- navigatino bar for big screens -->
+        <nav>
+          <div class="content">
+            <div class="links">
+              <a href="/" class="link">Home</a>
+              <a href="/contact-us" class="link">Contact Us</a>
+              <a href="/about-us" class="link">About Us</a>
+              <img src="/assets/shopping-cart.png" alt="shopping cart icon" class="shopping-cart-icon" />
+              <div class="profile-icon">
+                <span>U</span>
+              </div>
+            </div>
+
+          </div>
+        </nav>
+        <!-- navigation for smaller screens (mobile phones and some tablets) -->
+        <div id="side-menu">
+          <div class="links-side">
+            <a href="/" class="link">Home</a>
+            <a href="/contact-us" class="link">Contact Us</a>
+            <a href="/about-us" class="link">About Us</a>
+            <img src="/assets/shopping-cart.png" alt="shopping cart icon" class="shopping-cart-icon" />
+
+          </div>
+          <div class="profile-icon">
+            <span>U</span>
+          </div>
+        </div>
+      </header>
+      <!-- this container (main) will house all the pages content -->
+      <main>
+        <!-- content div allows us to style the container thaat will hold the actual content -->
+        <div class="content">
+          <section id="item-container">
+            <!-- ic-cont allows us to have space for our article, se we can easily center our articles inside this container -->
+            <div class="ic-cont">
+              <!-- the article is the actual card that we designed, didn't really need the parent div, but helps with alignment -->
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+            <div class="ic-cont">
+              <article class="item-card">
+                <img src class="item-image" />
+                <span>Name</span>
+                <span>Description</span>
+                <span>Price</span>
+                <span>Rating</span>
+                <input type="button" class="button" value="Add to Cart" />
+              </article>
+            </div>
+
+
+
+          </section>
+        </div>
+        <div id="vw">
+          fdsgdfgdf
+        </div>
+      </main>
+      <!-- footer container, always belongs at the bottom of the page -->
+      <footer>
+        <div id="footer-container">
+          <div class="footer-column">
+            <h3>SUII</h3>
+            <p>Making sysadmin intros easier</p>
+            <div>
+              <a href="#">X</a>
+              <a href="#">FB</a>
+              <a href="#">T</a>
+            </div>
+          </div>
+
+          <div class="footer-column">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a>Home</a></li>
+              <li><a>About Us</a></li>
+              <li><a>Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a>Home</a></li>
+              <li><a>About Us</a></li>
+              <li><a>Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a>Home</a></li>
+              <li><a>About Us</a></li>
+              <li><a>Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+
+</html>
